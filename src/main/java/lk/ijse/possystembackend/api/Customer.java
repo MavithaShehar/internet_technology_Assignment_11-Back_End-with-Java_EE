@@ -8,7 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lk.ijse.possystembackend.db.DBProcess;
+import lk.ijse.possystembackend.model.CustomerModel;
 import lk.ijse.possystembackend.dto.CustomerDTO;
 import lombok.var;
 
@@ -62,7 +62,7 @@ public class Customer extends HttpServlet {
             Jsonb jsonb = JsonbBuilder.create();
             CustomerDTO customerDTO = jsonb.fromJson(req.getReader(), CustomerDTO.class);
             System.out.println(customerDTO);
-            DBProcess dbProcess = new DBProcess();
+            CustomerModel dbProcess = new CustomerModel();
             dbProcess.saveCustomer(customerDTO, connection);
         }
 
@@ -74,7 +74,7 @@ public class Customer extends HttpServlet {
 
         var writer = resp.getWriter();
         resp.setContentType("text/html");
-        var data = new DBProcess();
+        var data = new CustomerModel();
         List<CustomerDTO> getData = data.getAllCustomer(connection);
 
         Jsonb jsonb = JsonbBuilder.create();
@@ -96,7 +96,7 @@ public class Customer extends HttpServlet {
             Jsonb jsonb = JsonbBuilder.create();
             var customerDTO = jsonb.fromJson(req.getReader(), CustomerDTO.class);
             System.out.println(customerDTO);
-            var dbProcess = new DBProcess();
+            var dbProcess = new CustomerModel();
             dbProcess.updateCustomer(customerDTO, connection);
         }
     }
@@ -114,7 +114,7 @@ public class Customer extends HttpServlet {
             Jsonb jsonb = JsonbBuilder.create();
             var customerDTO = jsonb.fromJson(req.getReader(), CustomerDTO.class);
             System.out.println(customerDTO);
-            var dbProcess = new DBProcess();
+            var dbProcess = new CustomerModel();
             dbProcess.deleteCustomer(customerDTO, connection);
         }
     }

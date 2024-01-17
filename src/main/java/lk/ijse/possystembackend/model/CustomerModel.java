@@ -1,4 +1,4 @@
-package lk.ijse.possystembackend.db;
+package lk.ijse.possystembackend.model;
 
 import lk.ijse.possystembackend.dto.CustomerDTO;
 import org.slf4j.Logger;
@@ -11,9 +11,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBProcess {
+public class CustomerModel {
 
-    static final Logger logger = LoggerFactory.getLogger(DBProcess.class);
+    static final Logger logger = LoggerFactory.getLogger(CustomerModel.class);
     private static final String SAVE_CUSTOMER = "INSERT INTO customer(id,name,address) VALUES(?,?,?)";
     private static final String GET_ALL_CUSTOMER = "SELECT * FROM customer";
     private static final String UPDATE_CUSTOMER = "UPDATE customer SET name=?,address=? WHERE id=?;";
