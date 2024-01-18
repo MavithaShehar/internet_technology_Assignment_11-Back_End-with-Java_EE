@@ -12,6 +12,7 @@ import lk.ijse.possystembackend.dto.CustomerDTO;
 import lk.ijse.possystembackend.dto.ItemsDTO;
 import lk.ijse.possystembackend.model.CustomerModel;
 import lk.ijse.possystembackend.model.ItemsModel;
+import lombok.var;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -19,6 +20,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet(name = "items",urlPatterns = "/items",
         initParams = {
@@ -31,6 +33,7 @@ import java.sql.SQLException;
 
 )
 public class Items  extends HttpServlet {
+
 
     Connection connection;
 
@@ -50,8 +53,6 @@ public class Items  extends HttpServlet {
 
     }
 
-
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("post");
@@ -68,6 +69,58 @@ public class Items  extends HttpServlet {
         }
 
     }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("do get");
+
+        var writer = resp.getWriter();
+        resp.setContentType("text/html");
+        var data = new ItemsModel();
+        List<ItemsDTO> getData = data.getAllItems(connection);
+
+        Jsonb jsonb = JsonbBuilder.create();
+        String json = jsonb.toJson(getData);
+        writer.write(json);
+        writer.close();
+
+
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        if (req.getContentType() == null ||
+                !req.getContentType().toLowerCase().startsWith("application/json")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        } else {
+
+            Jsonb jsonb = JsonbBuilder.create();
+            var itemsDTO = jsonb.fromJson(req.getReader(), ItemsDTO.class);
+            System.out.println(itemsDTO);
+            var dbProcess = new ItemsModel();
+            dbProcess.updateItems(itemsDTO, connection);
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        System.out.println("***** do delete");
+
+        if (req.getContentType() == null ||
+                !req.getContentType().toLowerCase().startsWith("application/json")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        } else {
+
+            Jsonb jsonb = JsonbBuilder.create();
+            var itemsDTO = jsonb.fromJson(req.getReader(), ItemsDTO.class);
+            System.out.println(itemsDTO);
+            var dbProcess = new ItemsModel();
+            dbProcess.deleteItems(itemsDTO, connection);
+        }
+    }
+
 
 
 }

@@ -7,12 +7,18 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemsModel {
 
     static final Logger logger = LoggerFactory.getLogger(CustomerModel.class);
     private static final String SAVE_ITEMS = "INSERT INTO items(id,name,price) VALUES(?,?,?)";
+    private static final String GET_ALL_ITEMS = "SELECT * FROM items";
+    private static final String UPDATE_ITEMS = "UPDATE items SET name=?,price=? WHERE id=?;";
+    private static final String DELETE_ITEMS = "DELETE FROM items WHERE id = ?";
 
 
     public void saveItems(ItemsDTO itemsDTO, Connection connection) {
@@ -37,5 +43,78 @@ public class ItemsModel {
 
 
     }
+
+    public List<ItemsDTO> getAllItems(Connection connection) {
+        List<ItemsDTO> itemsDTOs = new ArrayList<>();
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(GET_ALL_ITEMS);
+            ResultSet resultSet = ps.executeQuery();
+
+
+            while (resultSet.next()) {
+
+                itemsDTOs.add(new ItemsDTO(
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getDouble(3)
+
+                ));
+
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return itemsDTOs;
+    }
+
+
+    public void updateItems(ItemsDTO itemsDTO, Connection connection) {
+        try {
+            PreparedStatement ps = connection.prepareStatement(UPDATE_ITEMS);
+            ps.setString(1, itemsDTO.getName());
+            ps.setString(2, String.valueOf(itemsDTO.getPrice()));
+            ps.setString(3, itemsDTO.getId());
+
+            if (ps.executeUpdate() != 0) {
+                logger.info("Item updated successfully");
+                System.out.println("Data updated");
+            } else {
+                logger.info("Item updating failed");
+                System.out.println("Failed to update");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteItems(ItemsDTO itemsDTO, Connection connection) {
+
+        System.out.println("######## delete customer");
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(DELETE_ITEMS);
+            ps.setString(1, itemsDTO.getId());
+
+            if (ps.executeUpdate() != 0) {
+                logger.info("Item deleted successfully");
+                System.out.println("Data deleted");
+            } else {
+                logger.info("Item deleting failed");
+                System.out.println("Failed to delete");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 
 }
