@@ -14,26 +14,26 @@ import java.util.List;
 public class CustomerModel {
 
     static final Logger logger = LoggerFactory.getLogger(CustomerModel.class);
-    private static final String SAVE_CUSTOMER = "INSERT INTO customer(id,name,address) VALUES(?,?,?)";
+
+    private static final String SAVE_CUSTOMER = "INSERT INTO customer(c_id,c_name,c_address,c_contact) VALUES(?,?,?,?)";
     private static final String GET_ALL_CUSTOMER = "SELECT * FROM customer";
-    private static final String UPDATE_CUSTOMER = "UPDATE customer SET name=?,address=? WHERE id=?;";
-    private static final String DELETE_CUSTOMER = "DELETE FROM customer WHERE id = ?";
-
-
+    private static final String UPDATE_CUSTOMER = "UPDATE customer SET c_name=?, c_address=?, c_contact=? WHERE c_id=?";
+    private static final String DELETE_CUSTOMER = "DELETE FROM customer WHERE c_id = ?";
 
     public void saveCustomer(CustomerDTO customerDTO, Connection connection) {
 
         try {
             PreparedStatement ps = connection.prepareStatement(SAVE_CUSTOMER);
-            ps.setString(1, customerDTO.getId());
-            ps.setString(2, customerDTO.getName());
-            ps.setString(3, customerDTO.getAddress());
+            ps.setString(1, customerDTO.getC_id());
+            ps.setString(2, customerDTO.getC_name());
+            ps.setString(3, customerDTO.getC_address());
+            ps.setString(4, customerDTO.getC_contact());
 
             if (ps.executeUpdate() != 0) {
-                logger.info("Item saved successfully");
+                logger.info("customer saved successfully");
                 System.out.println("Data saved");
             } else {
-                logger.info("Item saving failed");
+                logger.info("customer saving failed");
                 System.out.println("Failed to save");
             }
 
@@ -57,7 +57,8 @@ public class CustomerModel {
                 customerDTOs.add(new CustomerDTO(
                         resultSet.getString(1),
                         resultSet.getString(2),
-                        resultSet.getString(3)
+                        resultSet.getString(3),
+                        resultSet.getString(4)
 
                 ));
 
@@ -76,15 +77,22 @@ public class CustomerModel {
     public void updateCustomer(CustomerDTO customerDTO, Connection connection) {
         try {
             PreparedStatement ps = connection.prepareStatement(UPDATE_CUSTOMER);
-            ps.setString(1, customerDTO.getName());
-            ps.setString(2, customerDTO.getAddress());
-            ps.setString(3, customerDTO.getId());
+
+            System.out.println(customerDTO.getC_name());
+            System.out.println(customerDTO.getC_address());
+            System.out.println(customerDTO.getC_contact());
+            System.out.println(customerDTO.getC_id());
+
+            ps.setString(1, customerDTO.getC_name());
+            ps.setString(2, customerDTO.getC_address());
+            ps.setString(3, customerDTO.getC_contact());
+            ps.setString(4, customerDTO.getC_id());
 
             if (ps.executeUpdate() != 0) {
-                logger.info("Item updated successfully");
+                logger.info("customer updated successfully");
                 System.out.println("Data updated");
             } else {
-                logger.info("Item updating failed");
+                logger.info("customer updating failed");
                 System.out.println("Failed to update");
             }
 
@@ -99,13 +107,13 @@ public class CustomerModel {
 
         try {
             PreparedStatement ps = connection.prepareStatement(DELETE_CUSTOMER);
-            ps.setString(1, customerDTO.getId());
+            ps.setString(1, customerDTO.getC_id());
 
             if (ps.executeUpdate() != 0) {
-                logger.info("Item deleted successfully");
+                logger.info("customer deleted successfully");
                 System.out.println("Data deleted");
             } else {
-                logger.info("Item deleting failed");
+                logger.info("customer deleting failed");
                 System.out.println("Failed to delete");
             }
 

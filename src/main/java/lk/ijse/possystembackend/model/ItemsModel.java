@@ -14,20 +14,21 @@ import java.util.List;
 
 public class ItemsModel {
 
-    static final Logger logger = LoggerFactory.getLogger(CustomerModel.class);
-    private static final String SAVE_ITEMS = "INSERT INTO items(id,name,price) VALUES(?,?,?)";
+    static final Logger logger = LoggerFactory.getLogger(ItemsModel.class);
+    private static final String SAVE_ITEMS = "INSERT INTO items(i_id,i_name,i_qty,i_price) VALUES(?,?,?,?)";
     private static final String GET_ALL_ITEMS = "SELECT * FROM items";
-    private static final String UPDATE_ITEMS = "UPDATE items SET name=?,price=? WHERE id=?;";
-    private static final String DELETE_ITEMS = "DELETE FROM items WHERE id = ?";
+    private static final String UPDATE_ITEMS = "UPDATE items SET i_name=?,i_qty=?,i_price=? WHERE i_id=?";
+    private static final String DELETE_ITEMS = "DELETE FROM items WHERE i_id = ?";
 
 
     public void saveItems(ItemsDTO itemsDTO, Connection connection) {
 
         try {
             PreparedStatement ps = connection.prepareStatement(SAVE_ITEMS);
-            ps.setString(1, itemsDTO.getId());
-            ps.setString(2, itemsDTO.getName());
-            ps.setString(3, String.valueOf(itemsDTO.getPrice()));
+            ps.setString(1, itemsDTO.getI_id());
+            ps.setString(2, itemsDTO.getI_name());
+            ps.setString(3, String.valueOf(itemsDTO.getI_qty()));
+            ps.setString(4, String.valueOf(itemsDTO.getI_price()));
 
             if (ps.executeUpdate() != 0) {
                 logger.info("Item saved successfully");
@@ -57,7 +58,8 @@ public class ItemsModel {
                 itemsDTOs.add(new ItemsDTO(
                         resultSet.getString(1),
                         resultSet.getString(2),
-                        resultSet.getDouble(3)
+                        resultSet.getInt(3),
+                        resultSet.getDouble(4)
 
                 ));
 
@@ -76,9 +78,10 @@ public class ItemsModel {
     public void updateItems(ItemsDTO itemsDTO, Connection connection) {
         try {
             PreparedStatement ps = connection.prepareStatement(UPDATE_ITEMS);
-            ps.setString(1, itemsDTO.getName());
-            ps.setString(2, String.valueOf(itemsDTO.getPrice()));
-            ps.setString(3, itemsDTO.getId());
+            ps.setString(1, itemsDTO.getI_name());
+            ps.setString(2, String.valueOf(itemsDTO.getI_qty()));
+            ps.setString(3, String.valueOf(itemsDTO.getI_price()));
+            ps.setString(4, itemsDTO.getI_id());
 
             if (ps.executeUpdate() != 0) {
                 logger.info("Item updated successfully");
@@ -99,7 +102,7 @@ public class ItemsModel {
 
         try {
             PreparedStatement ps = connection.prepareStatement(DELETE_ITEMS);
-            ps.setString(1, itemsDTO.getId());
+            ps.setString(1, itemsDTO.getI_id());
 
             if (ps.executeUpdate() != 0) {
                 logger.info("Item deleted successfully");

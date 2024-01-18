@@ -24,7 +24,7 @@ import java.util.List;
         initParams = {
                 @WebInitParam(name = "dto-user",value = "root"),
                 @WebInitParam(name = "dto-pw",value = "1234"),
-                @WebInitParam(name = "dto-url",value = "jdbc:mysql://localhost:3306/test"),
+                @WebInitParam(name = "dto-url",value = "jdbc:mysql://localhost:3306/pos_system"),
                 @WebInitParam(name = "dto-class",value = "com.mysql.cj.jdbc.Driver")
 
         }
