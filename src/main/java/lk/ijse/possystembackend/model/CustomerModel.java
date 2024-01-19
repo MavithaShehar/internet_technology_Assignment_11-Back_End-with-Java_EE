@@ -17,6 +17,7 @@ public class CustomerModel {
 
     private static final String SAVE_CUSTOMER = "INSERT INTO customer(c_id,c_name,c_address,c_contact) VALUES(?,?,?,?)";
     private static final String GET_ALL_CUSTOMER = "SELECT * FROM customer";
+    private static final String GET_CUSTOMER = "SELECT * FROM customer WHERE c_id = ?";
     private static final String UPDATE_CUSTOMER = "UPDATE customer SET c_name=?, c_address=?, c_contact=? WHERE c_id=?";
     private static final String DELETE_CUSTOMER = "DELETE FROM customer WHERE c_id = ?";
 
@@ -45,7 +46,7 @@ public class CustomerModel {
     }
 
     public CustomerDTO getCustomer(String id ,Connection connection) throws Exception {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM customer WHERE c_id = ?");
+        PreparedStatement ps = connection.prepareStatement(GET_CUSTOMER);
 
         ps.setString(1 , id);
 

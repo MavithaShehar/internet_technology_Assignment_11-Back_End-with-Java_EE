@@ -201,6 +201,10 @@ $("#customer-btns>button").eq(1).on("click", () => {
         loadCustomers();
 
     }
+// Clear the input fields
+    cleanInputs();
+    // load student data
+    loadCustomers();
 
     generateCustomerId();
 
