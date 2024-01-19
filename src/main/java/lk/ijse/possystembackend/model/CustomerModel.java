@@ -44,6 +44,26 @@ public class CustomerModel {
 
     }
 
+    public CustomerDTO getCustomer(String id ,Connection connection) throws Exception {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM customer WHERE c_id = ?");
+
+        ps.setString(1 , id);
+
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()){
+            return new CustomerDTO(
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getString(4)
+            );
+        }
+
+        throw new Exception();
+
+    }
+
     public List<CustomerDTO> getAllCustomer(Connection connection) {
         List<CustomerDTO> customerDTOs = new ArrayList<>();
 
@@ -101,19 +121,39 @@ public class CustomerModel {
         }
     }
 
-    public void deleteCustomer(CustomerDTO customerDTO, Connection connection) {
+    public void deleteCustomer(String c_id, Connection connection) {
 
         System.out.println("######## delete customer");
 
+
+//
+//        try {
+//            PreparedStatement ps = connection.prepareStatement(DELETE_CUSTOMER);
+//            ps.setString(1, customerDTO.getC_id());
+//
+//            if (ps.executeUpdate() != 0) {
+//                logger.info("customer deleted successfully");
+//                System.out.println("Data deleted");
+//            } else {
+//                logger.info("customer deleting failed");
+//                System.out.println("Failed to delete");
+//            }
+//
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+
         try {
             PreparedStatement ps = connection.prepareStatement(DELETE_CUSTOMER);
-            ps.setString(1, customerDTO.getC_id());
+            ps.setString(1, c_id);
 
-            if (ps.executeUpdate() != 0) {
-                logger.info("customer deleted successfully");
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected > 0) {
+                logger.info("Customer deleted successfully");
                 System.out.println("Data deleted");
             } else {
-                logger.info("customer deleting failed");
+                logger.info("Customer deleting failed");
                 System.out.println("Failed to delete");
             }
 
@@ -122,7 +162,5 @@ public class CustomerModel {
         }
     }
 
+    }
 
-
-
-}
