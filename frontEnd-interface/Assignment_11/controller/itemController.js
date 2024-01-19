@@ -37,24 +37,39 @@ function generateItemsId() {
 
 
 
-// Load items
+//Load items
 export const loadItems = () => {
     $('#items-tbl-body').empty();
 
-    items_db.map((item, index) => {
-        let tbl_row = `<tr>
-                        <td class="items_id">${item.items_id}</td>
-                        <td class="items_name">${item.items_name}</td>
-                        <td class="items_qty">${item.items_qty}</td>
-                        <td class="items_price">${item.items_price}</td>
-                        </tr>`;
-        $('#items-tbl-body').append(tbl_row);
+    $.ajax({
+        url: 'http://localhost:8080/scope/items',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+
+            data.map((item, index) => {
+
+                $("#items-tbl-body").append(`<tr>
+                        <td class="items_id">${item.i_id}</td>
+                        <td class="items_name">${item.i_name}</td>
+                        <td class="items_qty">${item.i_qty}</td>
+                        <td class="customer_price">${item.i_price}</td>
+                        </tr>`);
+
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX request failed: ' + status + ', ' + error);
+        }
     });
 };
+
+loadItems();
 
 generateItemsId();
 // Add item
 $('#items-btns>button').eq(0).on('click', () => {
+
     let items_id = $('#items_id').val();
     let items_name = $('#items_name').val();
     let items_qty = $('#items_qty').val();
@@ -113,6 +128,30 @@ $('#items-btns>button').eq(0).on('click', () => {
     let items = new ItemModel(items_id, items_name, items_qty, items_price);
     items_db.push(items);
 
+    var data = {
+        i_id:items.items_id,
+        i_name:items.items_name,
+        i_qty:items.items_qty,
+        i_price:items.items_price
+    }
+
+    console.log(JSON.stringify(items));
+
+    $.ajax({
+        url: 'http://localhost:8080/scope/items',
+        method: 'POST',
+        dataType: 'json',
+        contentType:'application/json',
+        data:JSON.stringify(data),
+        success: function (data) {
+            console.log(data)
+        },
+        error: function (xhr, status, error) {
+            console.log('AJAX request failed'+status);
+        }
+    });
+
+
     cleanInputs();
     loadItems();
     generateItemsId();
@@ -133,6 +172,29 @@ $('#items-btns>button').eq(1).on('click', () => {
     if (index !== -1) {
         // Update the item in the database
         items_db[index] = items_obj;
+
+        var data = {
+            i_id:items_obj.items_id,
+            i_name:items_obj.items_name,
+            i_qty:items_obj.items_qty,
+            i_price:items_obj.items_price
+        }
+
+        console.log(JSON.stringify(items));
+
+        $.ajax({
+            url: 'http://localhost:8080/scope/items',
+            method: 'PUT',
+            dataType: 'json',
+            contentType:'application/json',
+            data:JSON.stringify(data),
+            success: function (data) {
+                console.log(data)
+            },
+            error: function (xhr, status, error) {
+                console.log('AJAX request failed'+status);
+            }
+        });
 
         // Clear the input fields
         cleanInputs();
@@ -168,6 +230,30 @@ $('#items-btns>button').eq(2).on('click', () => {
                     'success'
                 );
 
+                $.ajax({
+                    url: 'http://localhost:8080/scope/customer?i_id=' + items_id,
+                    method: 'DELETE',
+                    dataType: 'json',
+                    contentType:'application/json',
+                    success: function (data) {
+                        Swal.fire(
+                            'Success',
+                            'Customer deleted successfully',
+                            'success'
+                        )
+
+                        // Clear the input fields
+                        cleanInputs();
+                        // load student data
+                        loadCustomers();
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('AJAX request failed'+status);
+                    }
+                });
+
+
                 // Clear the input fields
                 cleanInputs();
 
@@ -197,22 +283,49 @@ $('#items-tbl-body').on('click', 'tr', function () {
 
 // Search items
 $('#items-search').on('input', () => {
-    let items_search = $('#items-search').val().toLowerCase();
 
-    let results = items_db.filter(item =>
-        item.items_name.toLowerCase().includes(items_search) ||
-        item.items_id.toLowerCase().includes(items_search) ||
-        item.items_id.toLowerCase().includes(items_search)
-    );
 
-    $('#items-tbl-body').empty();
-    results.forEach(item => {
-        let tbl_row = `<tr>
-                        <td class="items_id">${item.items_id}</td>
-                        <td class="items_name">${item.items_name}</td>
-                        <td class="items_qty">${item.items_qty}</td>
-                        <td class="items_price">${item.items_price}</td>
-                        </tr>`;
-        $('#items-tbl-body').append(tbl_row);
+    let search_term = $('#items-search').val();
+
+    $.ajax({
+        url: 'http://localhost:8080/scope/items?i_id='+search_term,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            let items = data;
+
+            $('#items_id').val(items.i_id);
+            $('#items_name').val(items.i_name);
+            $('#items_qty').val(items.i_qty);
+            $('#items_price').val(items.i_price);
+
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX request failed: ' + status + ', ' + error);
+        }
     });
+
+
+
+
+    //let items_search = $('#items-search').val().toLowerCase();
+    // let results = items_db.filter(item =>
+    //     item.items_name.toLowerCase().includes(items_search) ||
+    //     item.items_id.toLowerCase().includes(items_search) ||
+    //     item.items_id.toLowerCase().includes(items_search)
+    // );
+    //
+    // $('#items-tbl-body').empty();
+    // results.forEach(item => {
+    //     let tbl_row = `<tr>
+    //                     <td class="items_id">${item.items_id}</td>
+    //                     <td class="items_name">${item.items_name}</td>
+    //                     <td class="items_qty">${item.items_qty}</td>
+    //                     <td class="items_price">${item.items_price}</td>
+    //                     </tr>`;
+    //     $('#items-tbl-body').append(tbl_row);
+    // });
+
+
+
 });
