@@ -11,7 +11,6 @@ const cleanInputs = () => {
     $('#customer_mobile').val('');
 };
 
-
 // generate oder ID
 function generateCustomerId() {
     if (customer_db.length === 0) {
