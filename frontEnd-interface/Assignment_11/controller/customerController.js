@@ -151,7 +151,6 @@ $('#customer-btns>button').eq(0).on('click', () => {
 });
 
 
-
 // update
 $("#customer-btns>button").eq(1).on("click", () => {
 
