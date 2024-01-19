@@ -17,6 +17,7 @@ public class ItemsModel {
     static final Logger logger = LoggerFactory.getLogger(ItemsModel.class);
     private static final String SAVE_ITEMS = "INSERT INTO items(i_id,i_name,i_qty,i_price) VALUES(?,?,?,?)";
     private static final String GET_ALL_ITEMS = "SELECT * FROM items";
+    private static final String GET_ITEMS ="SELECT * FROM customer WHERE c_id = ?";
     private static final String UPDATE_ITEMS = "UPDATE items SET i_name=?,i_qty=?,i_price=? WHERE i_id=?";
     private static final String DELETE_ITEMS = "DELETE FROM items WHERE i_id = ?";
 
@@ -96,28 +97,67 @@ public class ItemsModel {
         }
     }
 
-    public void deleteItems(ItemsDTO itemsDTO, Connection connection) {
+    public void deleteItems(String i_id, Connection connection) {
 
         System.out.println("######## delete customer");
 
+//        try {
+//            PreparedStatement ps = connection.prepareStatement(DELETE_ITEMS);
+//            ps.setString(1, itemsDTO.getI_id());
+//
+//            if (ps.executeUpdate() != 0) {
+//                logger.info("Item deleted successfully");
+//                System.out.println("Data deleted");
+//            } else {
+//                logger.info("Item deleting failed");
+//                System.out.println("Failed to delete");
+//            }
+//
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+
+
         try {
             PreparedStatement ps = connection.prepareStatement(DELETE_ITEMS);
-            ps.setString(1, itemsDTO.getI_id());
+            ps.setString(1, i_id);
 
-            if (ps.executeUpdate() != 0) {
-                logger.info("Item deleted successfully");
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected > 0) {
+                logger.info("Items deleted successfully");
                 System.out.println("Data deleted");
             } else {
-                logger.info("Item deleting failed");
+                logger.info("Items deleting failed");
                 System.out.println("Failed to delete");
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+
+
+
     }
 
 
+    public ItemsDTO getItems(String id, Connection connection) throws Exception {
+        PreparedStatement ps = connection.prepareStatement(GET_ITEMS);
 
+        ps.setString(1 , id);
 
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()){
+            return new ItemsDTO(
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getInt(3),
+                    rs.getDouble(4)
+            );
+        }
+
+        throw new Exception();
+    }
 }

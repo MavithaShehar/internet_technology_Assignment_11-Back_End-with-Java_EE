@@ -72,17 +72,49 @@ public class Items  extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        System.out.println("do get");
+//
+//        var writer = resp.getWriter();
+//        resp.setContentType("text/html");
+//        var data = new ItemsModel();
+//        List<ItemsDTO> getData = data.getAllItems(connection);
+//
+//        Jsonb jsonb = JsonbBuilder.create();
+//        String json = jsonb.toJson(getData);
+//        writer.write(json);
+//        writer.close();
+
         System.out.println("do get");
 
-        var writer = resp.getWriter();
-        resp.setContentType("text/html");
-        var data = new ItemsModel();
-        List<ItemsDTO> getData = data.getAllItems(connection);
+        resp.setContentType("application/json");
+
+        String i_id = req.getParameter("i_id");
 
         Jsonb jsonb = JsonbBuilder.create();
-        String json = jsonb.toJson(getData);
-        writer.write(json);
-        writer.close();
+        ItemsModel data = new ItemsModel();
+
+        if (i_id == null) {
+
+            List<ItemsDTO> getData = data.getAllItems(connection);
+
+            String json = jsonb.toJson(getData);
+            System.out.println(resp.getContentType()+"///////////////////////////////////////////////");
+            resp.getWriter().write(json);
+
+        } else {
+            try {
+                ItemsDTO items = data.getItems(i_id, connection);
+
+                resp.getWriter().write(jsonb.toJson(items));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+
 
 
     }
@@ -106,6 +138,20 @@ public class Items  extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+//        System.out.println("***** do delete");
+//
+//        if (req.getContentType() == null ||
+//                !req.getContentType().toLowerCase().startsWith("application/json")) {
+//            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+//        } else {
+//
+//            Jsonb jsonb = JsonbBuilder.create();
+//            var itemsDTO = jsonb.fromJson(req.getReader(), ItemsDTO.class);
+//            System.out.println(itemsDTO);
+//            var dbProcess = new ItemsModel();
+//            dbProcess.deleteItems(itemsDTO, connection);
+//        }
+
         System.out.println("***** do delete");
 
         if (req.getContentType() == null ||
@@ -113,12 +159,27 @@ public class Items  extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         } else {
 
-            Jsonb jsonb = JsonbBuilder.create();
-            var itemsDTO = jsonb.fromJson(req.getReader(), ItemsDTO.class);
-            System.out.println(itemsDTO);
+            resp.setContentType("application/json");
+
+            System.out.println("hello delete");
             var dbProcess = new ItemsModel();
-            dbProcess.deleteItems(itemsDTO, connection);
+
+            // Retrieve the 'id' parameter from the request
+            String i_id = req.getParameter("i_id");
+
+            System.out.println(i_id);
+
+            dbProcess.deleteItems(i_id, connection);
+
+            // Send a success response
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().write("Data deleted successfully");
+
         }
+
+
+
+
     }
 
 
