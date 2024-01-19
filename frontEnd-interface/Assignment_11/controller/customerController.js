@@ -257,6 +257,10 @@ $("#customer-btns>button").eq(2).on("click", () => {
                 }
             });
 
+            // Clear the input fields
+            cleanInputs();
+            // load student data
+            loadCustomers();
 
         }
     })
