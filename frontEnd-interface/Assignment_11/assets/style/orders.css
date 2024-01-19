@@ -1,0 +1,104 @@
+
+#order-section{
+    background: rgba(145, 235, 255, 0.07);
+}
+
+#order-section {
+    height: max-content;
+}
+
+
+.balance_card , .order_card , .customer_card , .item_card {
+    display: flex;
+    /*flex-wrap: wrap;*/
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    box-shadow: rgb(21, 204, 227) 0px 2px 8px;
+    padding: 10px;
+    margin: 5px;
+    width: calc(100% - 20px);
+}
+.balance_card{
+    background: rgba(18, 252, 1, 0.18);
+}
+
+.order_card{
+    background: rgba(255, 69, 0, 0.18);
+}
+
+.item_card > div {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.item_col {
+    /*justify-content: space-between;*/
+}
+
+tr > td {
+    padding: 7px!important;
+}
+
+.order_card > div > div:nth-child(2) {
+    /*width: 100%;*/
+}
+
+#customers , #items {
+    margin: 8px 0 0 0;
+}
+
+.add_item_btn , .purchase_btn {
+    margin: auto;
+    width: 100px!important;
+    height: 40px!important;
+}
+
+.purchase_btn {
+    background-color: #1CAF82;
+    border: transparent;
+}
+
+.purchase_btn:hover {
+    background-color: #006b4d;
+}
+
+.table-bordered thead th{
+    background: #0dcaf0;
+}
+
+#order-tbl-body td {
+    border-bottom-color: #1c1cd5;
+}
+.total{
+    color: #1c1cd5;
+}
+
+#sub_total_label h4{
+    color: red;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+#total_label {
+    display: flex;
+    justify-content: start;
+}
+#total_label h4{
+    width: fit-content;
+}
+#total_label h4:first-child{
+    margin-right:10px;
+}
+#sub_total_label {
+    display: flex;
+    justify-content: start;
+}
+#sub_total_label h4{
+    width: fit-content;
+}
+#sub_total_label h4:first-child{
+    margin-right:10px;
+}
+
+
