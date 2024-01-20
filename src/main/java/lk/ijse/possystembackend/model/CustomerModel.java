@@ -125,6 +125,8 @@ public class CustomerModel {
     public void deleteCustomer(String c_id, Connection connection) {
 
         System.out.println("######## delete customer");
+        System.out.println(c_id);
+
 
 
 //

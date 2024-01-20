@@ -152,12 +152,6 @@ public class Items  extends HttpServlet {
 //            dbProcess.deleteItems(itemsDTO, connection);
 //        }
 
-        System.out.println("***** do delete");
-
-        if (req.getContentType() == null ||
-                !req.getContentType().toLowerCase().startsWith("application/json")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-        } else {
 
             resp.setContentType("application/json");
 
@@ -172,8 +166,8 @@ public class Items  extends HttpServlet {
             dbProcess.deleteItems(i_id, connection);
 
             // Send a success response
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write("Data deleted successfully");
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.getWriter().write("Data deleted successfully");
 
         }
 
@@ -184,4 +178,4 @@ public class Items  extends HttpServlet {
 
 
 
-}
+

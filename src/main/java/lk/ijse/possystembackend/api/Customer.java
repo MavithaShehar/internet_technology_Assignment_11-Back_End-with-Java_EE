@@ -151,12 +151,7 @@ public class Customer extends HttpServlet {
 //        }
 
 
-                System.out.println("***** do delete");
-
-        if (req.getContentType() == null ||
-                !req.getContentType().toLowerCase().startsWith("application/json")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-        } else {
+            System.out.println("***** do delete");
 
             resp.setContentType("application/json");
 
@@ -173,10 +168,6 @@ public class Customer extends HttpServlet {
             // Send a success response
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write("Data deleted successfully");
-
-        }
-
-
 
             }
 
