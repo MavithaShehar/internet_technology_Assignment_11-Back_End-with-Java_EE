@@ -3,12 +3,16 @@ import {CustomerModel} from '../model/customerModel.js';
 
 const sriLankanMobileNumberRegex = /^(\+94|0)[1-9][0-9]{8}$/;
 
+let row_index = -1;
+
 // clean inputs
 const cleanInputs = () => {
     $('#customer_id').val('');
     $('#customer_name').val('');
     $('#customer_address').val('');
     $('#customer_mobile').val('');
+
+    row_index = -1;
 };
 
 // generate oder ID
@@ -29,22 +33,22 @@ function generateCustomerId() {
 // load customers
 const loadCustomers = () => {
 
-    $('#customer-tbl-body').empty();
 
     $.ajax({
         url: 'http://localhost:8080/scope/customer',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
+            $('#customer-tbl-body').empty();
 
             data.map((item, index) => {
 
-            $("#customer-tbl-body").append(`<tr>
-                        <td class="customer_id">${item.c_id}</td>
-                        <td class="customer_name">${item.c_name}</td>
-                        <td class="customer_address">${item.c_address}</td>
-                        <td class="customer_mobile">${item.c_contact}</td>
-                        </tr>`);
+                $("#customer-tbl-body").append(`<tr>
+                            <td class="customer_id">${item.c_id}</td>
+                            <td class="customer_name">${item.c_name}</td>
+                            <td class="customer_address">${item.c_address}</td>
+                            <td class="customer_mobile">${item.c_contact}</td>
+                            </tr>`);
 
             });
         },
@@ -64,12 +68,10 @@ $('#customer-btns>button').eq(0).on('click', () => {
 
     console.log("hello customer");
 
-
     let customer_id = $('#customer_id').val();
     let customer_name = $('#customer_name').val();
     let customer_address = $('#customer_address').val();
     let customer_mobile = $('#customer_mobile').val();
-
 
     if (customer_id) {
         let index = customer_db.findIndex(item => item.customer_id === customer_id);
@@ -164,12 +166,12 @@ $("#customer-btns>button").eq(1).on("click", () => {
     let customer_obj = new CustomerModel(customer_id, customer_name, customer_address, customer_mobile);
 
     // find item index
-    let index = customer_db.findIndex(item => item.customer_id === customer_id);
+    // let index = customer_db.findIndex(item => item.customer_id === customer_id);
 
-    if (index !== -1){
+    if (row_index > 0){
 
         // update item in the db
-        customer_db[index] = customer_obj;
+        // customer_db[index] = customer_obj;
 
         var data = {
             c_id:customer_obj.customer_id,
@@ -178,7 +180,8 @@ $("#customer-btns>button").eq(1).on("click", () => {
             c_contact:customer_obj.customer_mobile
         }
 
-        console.log(JSON.stringify(customer));
+        console.log(customer_obj);
+
 
         $.ajax({
             url: 'http://localhost:8080/scope/customer',
@@ -271,7 +274,7 @@ $("#customer-btns>button").eq(2).on("click", () => {
 
 // fill customer
 $('#customer-tbl-body').on('click', 'tr' , function() {
-    let index = $(this).index();
+    row_index = 1;
 
     let customer_id = $(this).find('.customer_id').text();
     let customer_name = $(this).find('.customer_name').text();
@@ -303,6 +306,8 @@ $('#customer-search').on('input', () => {
             $('#customer_name').val(customer.c_name);
             $('#customer_address').val(customer.c_address);
             $('#customer_mobile').val(customer.c_contact);
+
+            row_index = 1;
 
         },
         error: function (xhr, status, error) {
