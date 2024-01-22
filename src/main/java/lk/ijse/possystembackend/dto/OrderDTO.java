@@ -18,7 +18,7 @@ public class OrderDTO {
     private double discount;
     private double amount;
 
-    private OrderItemsDTO[] itemsDTO;
+    private ItemsDTO[] itemsDTO;
 
 
 }
