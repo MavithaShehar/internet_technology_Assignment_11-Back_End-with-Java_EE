@@ -17,7 +17,7 @@ public class ItemsModel {
     static final Logger logger = LoggerFactory.getLogger(ItemsModel.class);
     private static final String SAVE_ITEMS = "INSERT INTO items(i_id,i_name,i_qty,i_price) VALUES(?,?,?,?)";
     private static final String GET_ALL_ITEMS = "SELECT * FROM items";
-    private static final String GET_ITEMS ="SELECT * FROM customer WHERE c_id = ?";
+    private static final String GET_ITEMS ="SELECT * FROM items WHERE i_id = ?";
     private static final String UPDATE_ITEMS = "UPDATE items SET i_name=?,i_qty=?,i_price=? WHERE i_id=?";
     private static final String DELETE_ITEMS = "DELETE FROM items WHERE i_id = ?";
 
@@ -143,6 +143,9 @@ public class ItemsModel {
 
 
     public ItemsDTO getItems(String id, Connection connection) throws Exception {
+
+        System.out.println("do get getItems");
+
         PreparedStatement ps = connection.prepareStatement(GET_ITEMS);
 
         ps.setString(1 , id);

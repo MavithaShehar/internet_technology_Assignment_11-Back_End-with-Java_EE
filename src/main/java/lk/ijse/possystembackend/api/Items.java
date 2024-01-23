@@ -90,6 +90,7 @@ public class Items  extends HttpServlet {
 
         String i_id = req.getParameter("i_id");
 
+
         Jsonb jsonb = JsonbBuilder.create();
         ItemsModel data = new ItemsModel();
 
@@ -103,19 +104,20 @@ public class Items  extends HttpServlet {
 
         } else {
             try {
+
+                System.out.println("do get id is "+i_id);
+
                 ItemsDTO items = data.getItems(i_id, connection);
 
                 resp.getWriter().write(jsonb.toJson(items));
+
+                System.out.println(items);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
         }
-
-
-
-
 
     }
 
