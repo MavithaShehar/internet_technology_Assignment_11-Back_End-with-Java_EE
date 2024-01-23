@@ -6,6 +6,9 @@ import {orders_history_db} from "../db/db.js"
 import {ItemModel} from "../model/itemModel.js";
 import {Orders_history_Model} from "../model/Orders_history_Model .js"
 
+let customer = null;
+let items = null;
+
 function getLastCustomerId(customer_db) {
     const lastIndex = customer_db.length - 1;
     if (lastIndex >= 0) {
@@ -65,14 +68,32 @@ function generateOderId() {
 // load customers
 export const loadCustomers = () => {
 
-    getLastCustomerId(customer_db);
-    loadDate();
-
     $("#customer").empty();
-    $("#customer").append(`<option selected hidden>Select Customer</option>`);
-    customer_db.map((customer) => {
-        $("#customer").append(`<option value="${customer.customer_id}">${customer.customer_id}</option>`);
+  //  $("#customer").append(`<option selected hidden>Select Customer</option>`);
+
+    $.ajax({
+        url: 'http://localhost:8080/scope/customer',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            let customers = data;
+
+            customers.map((customer) => {
+                $("#customer").append(`<option value="${customer.c_id}">${customer.c_id}</option>`);
+            });
+
+            if (customer == null){
+                $("#customer").append(`<option value="" hidden selected>Select Customer</option>`);
+                $('#order_customer_name').val("");
+                $('#order_customer_address').val("");
+                $('#order_customer_mobile').val("");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX request failed: ' + status + ', ' + error);
+        }
     });
+
 };
 
 generateOderId();
@@ -81,21 +102,23 @@ generateOderId();
 $("#customer").on('change' , ()=> {
     let customerId = $("#customer").val();
 
-    // Find the customer in the customer_db array based on customer_id
-    let customer = customer_db.find(customer => customer.customer_id === customerId);
+    $.ajax({
+        url: 'http://localhost:8080/scope/customer?c_id='+customerId,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            customer = data;
 
-    // Find the index of the customer in the customer_db array
-    let cusRowIndex = customer_db.findIndex(customer => customer.customer_id === customerId);
-
-    let customer_id = customer_db[cusRowIndex].customer_id;
-    let customer_name = customer_db[cusRowIndex].customer_name;
-    let customer_address = customer_db[cusRowIndex].customer_address;
-    let customer_mobile = customer_db[cusRowIndex].customer_mobile;
-
-    // $('#customer_id').val(customer_id);
-    $('#order_customer_name').val(customer_name);
-    $('#order_customer_address').val(customer_address);
-    $('#order_customer_mobile').val(customer_mobile);
+            if (customer != null){
+                $('#order_customer_name').val(customer.c_name);
+                $('#order_customer_address').val(customer.c_address);
+                $('#order_customer_mobile').val(customer.c_contact);
+            }
+        },
+        error: function (xhr, status, error) {
+         //   console.error('AJAX request failed: ' + status + ', ' + error);
+        }
+    });
 
 });
 
@@ -103,40 +126,61 @@ $("#customer").on('change' , ()=> {
 // load items
 export const loadItems = () => {
 
+
     $("#items").empty();
-    $("#items").append(`<option selected hidden>Select Item</option>`);
-    items_db.map((items) => {
-        $("#items").append(`<option value="${items.items_id}">${items.items_id}</option>`);
+
+    $.ajax({
+        url: 'http://localhost:8080/scope/items',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            let items_data = data;
+
+            items_data.map((items) => {
+                $("#items").append(`<option value="${items.i_id}">${items.i_id}</option>`);
+            });
+
+            if (items == null){
+                $("#items").append(`<option value="" hidden selected>Select Items</option>`);
+                $('#order_items_name').val("");
+                $('#order_items_price').val("");
+                $('#order_qty').val("");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX request failed: ' + status + ', ' + error);
+        }
     });
+
+
 };
 
 //load customers for order customer text field
 $("#items").on('change', () => {
     let itemsId = $("#items").val();
 
-    // Find the items in the items_db array based on items_id
-    let items = items_db.find(items => items.items_id === itemsId);
+    console.log("items id is ",itemsId)
 
-     // Check if the item exists in the items_db array
-    if (items) {
-        // If it exists, find the index
-        let itmRowIndex = items_db.findIndex(item => item.items_id === itemsId);
+    $.ajax({
+        url: 'http://localhost:8080/scope/items?i_id='+itemsId,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            items = data;
 
-        //Access properties of the selected item
-        let items_id = items.items_id;
-        let order_items_name = items.items_name;
-        let order_items_qty = items.items_qty;
-        let order_items_price = items.items_price;
+            console.log(data)
 
-        // $('#items_id').val(items_id);
-        $('#order_items_name').val(order_items_name);
-        $('#store_items_qty').val(order_items_qty);
-        $('#order_items_price').val(order_items_price);
+            if (items != null){
+                $('#order_items_name').val(items.i_name);
+                $('#store_items_qty').val(items.i_qty);
+                $('#order_items_price').val(items.i_price);
+            }
+        },
+        error: function (xhr, status, error) {
+          //  console.error('AJAX request failed: ' + status + ', ' + error);
+        }
+    });
 
-        // Now, you can use these properties as needed
-    } else {
-        toastr.error("Item not found in Data Base");
-    }
 });
 
 
@@ -340,6 +384,7 @@ const subTotal = () => {
 }
 
 
+// purchase orders
 
 let total_amount_pre_day = 0;
 let sale_count =0
@@ -407,7 +452,34 @@ const lod_order_history = () => {
         sub_total
     );
 
+    var data = {
+        o_id:order.order_id,
+        o_date:order.date,
+        c_id:order.customer_id,
+        discount:order.discount,
+        amount:order.sub_total,
+        itemsDTO:order_items
+    }
+
+    $.ajax({
+        url: 'http://localhost:8080/scope/order',
+        method: 'POST',
+        dataType: 'json',
+        contentType:'application/json',
+        data:JSON.stringify(data),
+        success: function (data) {
+            console.log(data)
+        },
+        error: function (xhr, status, error) {
+            console.log('AJAX request failed'+status);
+        }
+    });
+
+
     orders_history_db.push(order);
+
+
+
 
     // Reset values
     runningTotal = 0;
