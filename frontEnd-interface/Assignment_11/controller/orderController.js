@@ -68,6 +68,8 @@ function generateOderId() {
 // load customers
 export const loadCustomers = () => {
 
+    loadDate();
+
     $("#customer").empty();
   //  $("#customer").append(`<option selected hidden>Select Customer</option>`);
 
@@ -184,6 +186,8 @@ $("#items").on('change', () => {
 });
 
 
+let order_items = [];
+
 // Handle "Add Items" button click
 $('#add_items').eq(0).on('click', () => {
 
@@ -208,6 +212,14 @@ $('#add_items').eq(0).on('click', () => {
     let order_items_name = $("#order_items_name").val(); // Assuming it's a string, not a number
     let order_items_price = parseFloat($("#order_items_price").val());
     let store_items_qty = parseFloat($("#store_items_qty").val());
+
+    var items_data ={
+        i_id:order_items_id,
+        i_name:order_items_name,
+        i_qty:order_qty,
+        i_price:order_items_price
+    }
+    order_items.push(items_data);
 
 
     // Validate order_qty and order_items_price
@@ -420,6 +432,40 @@ $('#purchase').on('click', () => {
         if (result.isConfirmed) {
             Swal.fire("Saved!", "", "success");
 
+          //  let order_items = orders_db.slice();
+
+
+            var data = {
+                o_id:$('#order_id').val(),
+                o_date:$('#datePicker').val(),
+                c_id:$('#customer').val(),
+                discount:$('#discount').val(),
+                amount:$('#sub_total').text(),
+                itemsDTO:order_items
+
+            }
+
+            console.log(data)
+
+            $.ajax({
+                url: 'http://localhost:8080/scope/order',
+                method: 'POST',
+                dataType: 'json',
+                contentType:'application/json',
+                data:JSON.stringify(data),
+                success: function (data) {
+                    console.log(data)
+
+                    order_items.length =0;
+
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX request failed'+status);
+                }
+            });
+
+
+
             lod_order_history();
             sale_count ++;
             $("#sale_count").text(sale_count);
@@ -447,33 +493,10 @@ const lod_order_history = () => {
         order_id,
         datePicker,
         customer_id,
-        order_items,
         discount,
-        sub_total
+        sub_total,
+        order_items
     );
-
-    var data = {
-        o_id:order.order_id,
-        o_date:order.date,
-        c_id:order.customer_id,
-        discount:order.discount,
-        amount:order.sub_total,
-        itemsDTO:order_items
-    }
-
-    $.ajax({
-        url: 'http://localhost:8080/scope/order',
-        method: 'POST',
-        dataType: 'json',
-        contentType:'application/json',
-        data:JSON.stringify(data),
-        success: function (data) {
-            console.log(data)
-        },
-        error: function (xhr, status, error) {
-            console.log('AJAX request failed'+status);
-        }
-    });
 
 
     orders_history_db.push(order);
@@ -529,12 +552,12 @@ $('#order-tbl-body').on('click', '.selection button', function () {
 });
 
 // search orders
-$('#order_id').on('input', () => {
-    let search_term = $('#order_id').val();
-
-
-    let results = orders_db.filter((item) =>
-
-        item.items_name.toLowerCase().startsWith(search_term.toLowerCase()) || item.order_qty.toLowerCase().startsWith(search_term.toLowerCase()) || item.items_price.startsWith(search_term)|| item.order_total.startsWith(search_term)
-    )
-});
+// $('#order_id').on('input', () => {
+//     let search_term = $('#order_id').val();
+//
+//
+//     let results = orders_db.filter((item) =>
+//
+//         item.items_name.toLowerCase().startsWith(search_term.toLowerCase()) || item.order_qty.toLowerCase().startsWith(search_term.toLowerCase()) || item.items_price.startsWith(search_term)|| item.order_total.startsWith(search_term)
+//     )
+// });
