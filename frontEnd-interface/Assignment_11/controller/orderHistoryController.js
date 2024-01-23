@@ -9,19 +9,32 @@ import {Orders_history_Model} from "../model/Orders_history_Model .js"
 // load order history
 export const loadHistory = () => {
 
-    $('#order-history-tbl-body').empty();
+    $.ajax({
+        url:'http://localhost:8080/scope/order',
+        method: 'GET',
+        dataType: 'json',
+        success:function (data){
+            $('#order-history-tbl-body').empty();
 
-    orders_history_db.map((item, index) => {
-        let tbl_row = `<tr>
-                        <td class="order_id">${item.order_id}</td>
-                        <td class="date">${item.date}</td>
-                        <td class="customer_id">${item.customer_id}</td>
-                        <td class="ordersModel"> <button type="button" class="btn btn-info">Click</button> </td>
+            data.map((item, index) => {
+
+                $("#order-history-tbl-body").append(`<tr>
+                        <td class="order_id">${item.o_id}</td>
+                        <td class="date">${item.o_date}</td>
+                        <td class="customer_id">${item.c_id}</td>
+                        <td class="ordersModel">  <button type="button" class="btn btn-info">${item.o_items}</button></td>
                         <td class="discount">${item.discount}</td>
-                        <td class="sub_total">${item.sub_total}</td>
-                        </tr>`;
-        $('#order-history-tbl-body').append(tbl_row);
-    });
+                        <td class="sub_total">${item.amount}</td>
+                            </tr>`);
+
+            });
+
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX request failed: ' + status + ', ' + error);
+        }
+
+        });
 
 };
 
@@ -31,22 +44,28 @@ $("#order-history-tbl-body").on('click', 'tr', function (){
     let selectedId = $(this).find("td:nth-child(1)").text();
     console.log("order Id is : ",selectedId);
 
-    let index = orders_history_db.findIndex(order => order.order_id === selectedId);
-    console.log(index);
+    $.ajax({
+        url:'http://localhost:8080/scope/order_items?o_id='+selectedId,
+        method: 'GET',
+        dataType: 'json',
+        success:function (data){
+            $('#order-history-items-tbl-body').empty();
 
-    if(index == -1) return;
+            data.map((item, index) => {
 
-    $('#order-history-items-tbl-body').empty();
-    orders_history_db[index].orders_items.map((item) => {
+                $("#order-history-items-tbl-body").append(`<tr>
+                         <td class="items_id">${item.i_id}</td>
+                        <td class="items_name">${item.i_name}</td>
+                        <td class="items_price">${item.i_qty}</td>
+                        <td class="items_qty">${item.i_price}</td>
+                            </tr>`);
 
-        let tbl_row = `<tr>
-                        <td class="items_id">${item.items_id}</td>
-                        <td class="items_name">${item.items_name}</td>
-                        <td class="items_price">${item.items_price}</td>
-                        <td class="items_qty">${item.order_qty}</td>
-                        </tr>`;
-        $('#order-history-items-tbl-body').append(tbl_row);
+            });
 
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX request failed: ' + status + ', ' + error);
+        }
 
     });
 
