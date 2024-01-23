@@ -21,4 +21,14 @@ public class OrderDTO {
     private ItemsDTO[] itemsDTO;
 
 
+    public OrderDTO(String string, String string1, String string2, String string3, double aDouble, double aDouble1) {
+
+        this.o_id = string;
+        this.o_date = string1;
+        this.c_id = string2;
+        this.o_items = string3;
+        this.discount = aDouble;
+        this.amount = aDouble1;
+
+    }
 }

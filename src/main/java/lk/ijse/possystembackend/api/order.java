@@ -8,7 +8,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lk.ijse.possystembackend.dto.CustomerDTO;
+import lk.ijse.possystembackend.dto.ItemsDTO;
 import lk.ijse.possystembackend.dto.OrderDTO;
+import lk.ijse.possystembackend.model.CustomerModel;
 import lk.ijse.possystembackend.model.OrderModel;
 import lombok.var;
 
@@ -18,6 +21,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet(name = "order",urlPatterns = "/order",
         initParams = {
@@ -70,4 +74,28 @@ public class order extends HttpServlet {
         }
     }
 
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        resp.setContentType("application/json");
+
+        String o_id = req.getParameter("o_id");
+
+        Jsonb jsonb = JsonbBuilder.create();
+        OrderModel data = new OrderModel();
+
+        System.out.println("order id is + "+ o_id);
+
+        if (o_id == null) {
+
+            List<OrderDTO> getData = data.getAllOrders(connection);
+
+            String json = jsonb.toJson(getData);
+            System.out.println(resp.getContentType()+"///////////////////////////////////////////////");
+            resp.getWriter().write(json);
+
+        }
+
+    }
 }

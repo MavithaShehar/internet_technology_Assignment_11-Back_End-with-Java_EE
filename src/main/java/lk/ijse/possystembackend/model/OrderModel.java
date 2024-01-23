@@ -1,6 +1,7 @@
 package lk.ijse.possystembackend.model;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lk.ijse.possystembackend.dto.CustomerDTO;
 import lk.ijse.possystembackend.dto.ItemsDTO;
 import lk.ijse.possystembackend.dto.OrderDTO;
 import org.slf4j.Logger;
@@ -10,13 +11,18 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrderModel {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemsModel.class);
     private static final String SAVE_ORDER = "INSERT INTO orders (o_id, o_date, c_id, o_items, discount, amount) VALUES (?, ?, ?, ?, ?, ?)";
     private static final String SAVE_ITEMS = "INSERT INTO orders_items (o_id, i_id, i_name, i_price, qty) VALUES (?, ?, ?, ?, ?)";
+    private static final String GET_ALL_ORDERS = "SELECT * FROM orders";
+    private static final String GET_ORDER_ITEMS ="SELECT * FROM orders_items WHERE o_id = ?";
 
     public boolean saveOrder(OrderDTO orderDTO, Connection connection, HttpServletResponse resp) throws IOException {
         System.out.println("order saved");
@@ -72,4 +78,37 @@ public class OrderModel {
             throw new RuntimeException(e);
         }
     }
+
+    public List<OrderDTO> getAllOrders(Connection connection) {
+        List<OrderDTO> orderDTOs = new ArrayList<>();
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(GET_ALL_ORDERS);
+            ResultSet resultSet = ps.executeQuery();
+
+
+            while (resultSet.next()) {
+
+                orderDTOs.add(new OrderDTO(
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getString(4),
+                        resultSet.getDouble(5),
+                        resultSet.getDouble(6)
+                ));
+
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return orderDTOs;
+    }
+
+
+
 }
