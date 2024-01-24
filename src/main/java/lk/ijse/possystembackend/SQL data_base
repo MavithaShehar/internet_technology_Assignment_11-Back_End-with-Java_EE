@@ -1,0 +1,45 @@
+drop database pos_system;
+
+create database pos_system;;
+use pos_system;;
+show tables;
+
+
+create table customer (
+    c_id VARCHAR(5) PRIMARY KEY,
+    c_name VARCHAR(50),
+    c_address TEXT,
+    c_contact VARCHAR(12)
+
+);
+
+create table items (
+    i_id VARCHAR(5) PRIMARY KEY,
+    i_name VARCHAR(50),
+    i_qty INT,
+    i_price DECIMAL(8,2)
+
+);
+
+create table orders(
+    o_id VARCHAR(5) PRIMARY KEY ,
+    o_date DATE ,
+    c_id VARCHAR(5),
+    o_items VARCHAR(5),
+    discount DECIMAL(5,2),
+    amount DECIMAL(10,2),
+
+    FOREIGN KEY (c_id) REFERENCES customer(c_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+create table orders_items (
+    o_id VARCHAR(5),
+    i_id VARCHAR(5),
+    i_name VARCHAR(20),
+    i_price DECIMAL(8,2)
+    qty INT,
+    PRIMARY KEY (o_id , i_id),
+    FOREIGN KEY (o_id) REFERENCES orders(o_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (i_id) REFERENCES items(i_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
