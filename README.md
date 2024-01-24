@@ -126,8 +126,9 @@ To use the POS System API, follow these steps:
       ]
       }
       ```
-2**GET - Get all orders to fill the table**
+2. **GET - Get all orders to fill the table**
     - Endpoint: `http://localhost:8080/scope/order`
+   
 3. **GET - Get order**
     - Endpoint: `http://localhost:8080/scope/order?o_id=O001`
     
